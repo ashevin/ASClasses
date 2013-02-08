@@ -19,5 +19,7 @@ typedef enum
 @interface ASTriangleButton : UIControl
 
 @property (nonatomic) ASTriangleButtonDirection triangleDirection;
+@property (nonatomic, strong) UIColor *fillColor;
+@property (nonatomic, strong) UIColor *strokeColor;
 
 @end

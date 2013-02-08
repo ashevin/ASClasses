@@ -49,6 +49,9 @@
   
   CGContextRef ref = UIGraphicsGetCurrentContext();
 
+  CGContextSetFillColorWithColor(ref, self.fillColor.CGColor);
+  CGContextSetStrokeColorWithColor(ref, self.strokeColor.CGColor);
+  
   CGMutablePathRef triangle = CGPathCreateMutable();
 
   CGPathMoveToPoint(triangle, NULL, a.x, a.y);
@@ -58,6 +61,7 @@
 
   CGContextAddPath(ref, triangle);
   CGContextFillPath(ref);
+  //CGContextDrawPath(ref, kCGPathFillStroke);
   
   CGPathRelease(triangle);
 }
@@ -65,6 +69,20 @@
 - (void) setTriangleDirection:(ASTriangleButtonDirection)triangleDirection
 {
   _triangleDirection = triangleDirection;
+  
+  [self setNeedsDisplay];
+}
+
+- (void) setFillColor:(UIColor *)fillColor
+{
+  _fillColor = fillColor;
+  
+  [self setNeedsDisplay];
+}
+
+- (void) setStrokeColor:(UIColor *)strokeColor
+{
+  _strokeColor = strokeColor;
   
   [self setNeedsDisplay];
 }
