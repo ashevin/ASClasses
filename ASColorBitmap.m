@@ -8,7 +8,7 @@
 
 #import "ASBitmap.h"
 
-@implementation ASBitmap
+@implementation ASColorBitmap
 {
   unsigned char *bitmap;
   
