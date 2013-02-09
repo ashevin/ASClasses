@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "ASGraphics.h"
+#import "ASBitmap.h"
 
-@interface ASColorBitmap : NSObject
+@interface ASColorBitmap : NSObject <ASBitmap>
 
 - (id) initWithImage:(UIImage *)image;
 

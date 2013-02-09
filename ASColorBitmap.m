@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Avi Shevin. All rights reserved.
 //
 
-#import "ASBitmap.h"
+#import "ASColorBitmap.h"
 
 @implementation ASColorBitmap
 {
