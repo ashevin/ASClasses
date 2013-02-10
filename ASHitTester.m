@@ -57,7 +57,7 @@ BOOL isInRegion(ASGrayscaleBitmap *bitmap, CGPoint target, ASPoint *center)
   double maxY = MAX(target.y, center.y);
   
   NSLog(@"hitX = %f, hitY = %f", target.x, target.y);
-  NSLog(@"midX = %u, midY = %u", center.x, center.y);
+  NSLog(@"midX = %f, midY = %f", center.x, center.y);
   NSLog(@"m = %f, b = %f", m, b);
   
   ASPixel *black = ASPixelMake(0, 0, 0, 0);

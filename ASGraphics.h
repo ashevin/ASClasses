@@ -27,9 +27,10 @@ ASPixel* ASPixelMake(unsigned char red, unsigned char green, unsigned char blue,
 
 @interface ASPoint : NSObject
 
-@property (nonatomic) NSUInteger x;
-@property (nonatomic) NSUInteger y;
+@property (nonatomic, readonly) CGPoint point;
+@property (nonatomic) float x;
+@property (nonatomic) float y;
 
 @end
 
-ASPoint* ASPointMake(NSUInteger x, NSUInteger y);
+ASPoint* ASPointMake(float x, float y);
