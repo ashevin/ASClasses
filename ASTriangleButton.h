@@ -13,7 +13,8 @@ typedef enum
   ASTriangleButtonDirectionLeft,
   ASTriangleButtonDirectionRight,
   ASTriangleButtonDirectionUp,
-  ASTriangleButtonDirectionDown
+  ASTriangleButtonDirectionDown,
+  ASTriangleButtonDirectionArbitrary
 } ASTriangleButtonDirection;
 
 @interface ASTriangleButton : UIControl
@@ -21,5 +22,8 @@ typedef enum
 @property (nonatomic) ASTriangleButtonDirection triangleDirection;
 @property (nonatomic, strong) UIColor *fillColor;
 @property (nonatomic, strong) UIColor *strokeColor;
+@property (nonatomic) float angle;
+@property (nonatomic) float baseHeight;
+@property (nonatomic) float baseWidth;
 
 @end
