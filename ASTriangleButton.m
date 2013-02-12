@@ -31,8 +31,22 @@ typedef void (*PointFunction)(id, CGPoint *, CGPoint *, CGPoint *);
     CGContextTranslateCTM (ctx, -center.x, -center.y);
   }
   
-  CGContextSetFillColorWithColor(ctx, self.fillColor.CGColor);
-  CGContextSetStrokeColorWithColor(ctx, self.strokeColor.CGColor);
+  if ( self.state == UIControlStateHighlighted )
+  {
+    CGFloat h, s, b, a;
+    
+    [self.fillColor getHue:&h saturation:&s brightness:&b alpha:&a];
+    
+    UIColor *color = [UIColor colorWithHue:h saturation:s brightness:b + 0.2 alpha:a];
+    
+    CGContextSetFillColorWithColor(ctx, color.CGColor);
+    CGContextSetStrokeColorWithColor(ctx, [UIColor clearColor].CGColor);
+  }
+  else
+  {
+    CGContextSetFillColorWithColor(ctx, self.fillColor.CGColor);
+    CGContextSetStrokeColorWithColor(ctx, self.strokeColor.CGColor);
+  }
   
   CGMutablePathRef triangle = CGPathCreateMutable();
 
@@ -131,6 +145,35 @@ void pointsForArbitrary(ASTriangleButton *tri, CGPoint *a, CGPoint *b, CGPoint *
   _baseWidth = baseWidth;
   
   [self setNeedsDisplay];
+}
+
+- (void)hesitateUpdate
+{
+    [self setNeedsDisplay];
+}
+ 
+-(void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+  [super touchesBegan:touches withEvent:event];
+  [self setNeedsDisplay];
+}
+ 
+- (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+  [super touchesMoved:touches withEvent:event];
+  [self setNeedsDisplay];
+}
+ 
+- (void) touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+  [super touchesCancelled:touches withEvent:event];
+  [self setNeedsDisplay];
+  [self performSelector:@selector(hesitateUpdate) withObject:nil afterDelay:0.1];
+}
+ 
+- (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+  [super touchesEnded:touches withEvent:event];
+  [self setNeedsDisplay];
+  [self performSelector:@selector(hesitateUpdate) withObject:nil afterDelay:0.1];
 }
 
 @end
