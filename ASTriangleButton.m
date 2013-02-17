@@ -12,6 +12,34 @@ typedef void (*PointFunction)(id, CGPoint *, CGPoint *, CGPoint *);
 
 @implementation ASTriangleButton
 
+- (id) initWithFrame:(CGRect)frame
+{
+  self = [super initWithFrame:frame];
+  
+  return [self finishInit];
+}
+
+- (id) initWithCoder:(NSCoder *)aDecoder
+{
+  self = [super initWithCoder:aDecoder];
+  
+  return [self finishInit];
+}
+
+- (id) finishInit
+{
+  if ( self )
+  {
+    if ( self.fillColor == nil )
+      self.fillColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:1.0];
+
+    if ( self.strokeColor == nil )
+      self.strokeColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:1.0];
+  }
+  
+  return self;
+}
+
 - (void) drawRect:(CGRect)rect
 {
   static PointFunction pointFunctions[5] = { pointsForLeft, pointsForRight, pointsForUp, pointsForDown, pointsForArbitrary };
@@ -33,11 +61,11 @@ typedef void (*PointFunction)(id, CGPoint *, CGPoint *, CGPoint *);
   
   if ( self.state == UIControlStateHighlighted )
   {
-    CGFloat h, s, b, a;
+    CGFloat h, s, br, alpha;
     
-    [self.fillColor getHue:&h saturation:&s brightness:&b alpha:&a];
+    [self.fillColor getHue:&h saturation:&s brightness:&br alpha:&alpha];
     
-    UIColor *color = [UIColor colorWithHue:h saturation:s brightness:b + 0.2 alpha:a];
+    UIColor *color = [UIColor colorWithHue:h saturation:s brightness:br + 0.2 alpha:alpha];
     
     CGContextSetFillColorWithColor(ctx, color.CGColor);
     CGContextSetStrokeColorWithColor(ctx, [UIColor clearColor].CGColor);
@@ -114,6 +142,11 @@ void pointsForArbitrary(ASTriangleButton *tri, CGPoint *a, CGPoint *b, CGPoint *
 
 - (void) setFillColor:(UIColor *)fillColor
 {
+#if ! __has_feature(objc_arc)
+  [fillColor retain];
+  [_fillColor release];
+#endif
+
   _fillColor = fillColor;
   
   [self setNeedsDisplay];
@@ -121,6 +154,11 @@ void pointsForArbitrary(ASTriangleButton *tri, CGPoint *a, CGPoint *b, CGPoint *
 
 - (void) setStrokeColor:(UIColor *)strokeColor
 {
+#if ! __has_feature(objc_arc)
+  [strokeColor retain];
+  [_strokeColor release];
+#endif
+
   _strokeColor = strokeColor;
   
   [self setNeedsDisplay];
@@ -175,5 +213,17 @@ void pointsForArbitrary(ASTriangleButton *tri, CGPoint *a, CGPoint *b, CGPoint *
   [self setNeedsDisplay];
   [self performSelector:@selector(hesitateUpdate) withObject:nil afterDelay:0.1];
 }
+
+#if ! __has_feature(objc_arc)
+
+- (void) dealloc
+{
+  [_fillColor release];
+  [_strokeColor release];
+  
+  [super dealloc];
+}
+
+#endif
 
 @end
