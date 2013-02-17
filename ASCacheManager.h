@@ -10,4 +10,8 @@
 
 @interface ASCacheManager : NSObject
 
+- (NSString *) retrieveFilenameForResource:(NSString *)resourceName;
+
+- (void) saveDataToCache:(NSData *)data withResourceName:(NSString *)resourceName;
+
 @end
