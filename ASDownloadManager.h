@@ -8,15 +8,25 @@
 
 #import <Foundation/Foundation.h>
 
+@interface ASDownloadRequest : NSObject
+
+@property (nonatomic, strong) NSHTTPURLResponse *response;
+@property (nonatomic, strong) NSData *data;
+@property (nonatomic, strong) NSError *error;
+@property (nonatomic, strong) NSString *resource;
+@property (nonatomic, strong) id cookie;
+
+@end
+
 @protocol ASDownloadManagerDelegate
 
-- (void) requestWithResponse:(NSHTTPURLResponse *)response withData:(NSData *)data withError:(NSError *)error forResource:(NSString *)resource;
+- (void) responseWithRequest:(ASDownloadRequest *)request;
 
 @end
 
 @interface ASDownloadManager : NSObject
 
-- (void) downloadResourceWithURL:(NSString *)url;
+- (void) downloadResourceWithRequest:(ASDownloadRequest *)request;
 
 @property (nonatomic, strong) NSOperationQueue *queue;
 @property (nonatomic, weak) id<ASDownloadManagerDelegate> delegate;

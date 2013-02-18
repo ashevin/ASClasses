@@ -8,6 +8,10 @@
 
 #import "ASDownloadManager.h"
 
+@implementation ASDownloadRequest
+
+@end
+
 @implementation ASDownloadManager
 
 - (id) init
@@ -21,10 +25,10 @@
   return self;
 }
 
-- (void) downloadResourceWithURL:(NSString *)url
+- (void) downloadResourceWithRequest:(ASDownloadRequest *)request
 {
   NSURLRequest *req =
-    [NSURLRequest requestWithURL:[NSURL URLWithString:url]
+    [NSURLRequest requestWithURL:[NSURL URLWithString:request.resource]
                   cachePolicy:NSURLRequestUseProtocolCachePolicy
                   timeoutInterval:5.0];
 
@@ -32,11 +36,13 @@
   
   handler = ^(NSURLResponse* response, NSData* data, NSError* error)
   {
-    NSString *resource = url;
+    ASDownloadRequest *capturedRequest = request;
     
-    NSHTTPURLResponse *resp = (NSHTTPURLResponse*)response;
+    capturedRequest.response = (NSHTTPURLResponse*)response;
+    capturedRequest.data = data;
+    capturedRequest.error = error;
     
-    [self.delegate requestWithResponse:resp withData:data withError:error forResource:resource];
+    [self.delegate responseWithRequest:capturedRequest];
   };
   
   [NSURLConnection sendAsynchronousRequest:req queue:self.queue completionHandler:handler];
