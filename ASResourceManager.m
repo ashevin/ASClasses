@@ -33,30 +33,35 @@
   return self;
 }
 
-- (void) retrieveResourceWithName:(NSString *)resourceName
+- (void) retrieveResourceWithName:(NSString *)resourceName andCookie:(id)cookie
 {
   NSString *file = [self.cache retrieveFilenameForResource:resourceName];
   
   if ( file != nil )
   {
-    [self.delegate fileName:file forResource:resourceName withError:nil];
+    [self.delegate fileName:file forResource:resourceName withError:nil andCookie:cookie];
     
     return;
   }
   
-  [self.downloader downloadResourceWithURL:resourceName];
+  ASDownloadRequest *req = [[ASDownloadRequest alloc] init];
+  
+  req.resource = resourceName;
+  req.cookie = cookie;
+  
+  [self.downloader downloadResourceWithRequest:req];
 }
 
-- (void) requestWithResponse:(NSHTTPURLResponse *)response withData:(NSData *)data withError:(NSError *)error forResource:(NSString *)resource
+- (void) responseWithRequest:(ASDownloadRequest *)request
 {
-  NSLog(@"%@ [%@] : %d", response.MIMEType, response.suggestedFilename, response.statusCode);
-  NSLog(@"%@", [NSString stringWithUTF8String:[data bytes]]);
-  NSLog(@"%@", error);
-  NSLog(@"%@", resource);
+  NSLog(@"%@ [%@] : %d", request.response.MIMEType, request.response.suggestedFilename, request.response.statusCode);
+  NSLog(@"error: %@", request.error);
+  NSLog(@"resource: %@", request.resource);
+  NSLog(@"cookie: %@", request.cookie);
 
-  [self.cache saveDataToCache:data withResourceName:resource];
+  [self.cache saveDataToCache:request.data withResourceName:request.resource];
   
-  [self retrieveResourceWithName:resource];
+  [self retrieveResourceWithName:request.resource andCookie:request.cookie];
 }
 
 @end

@@ -10,13 +10,13 @@
 
 @protocol ASResourceManagerDelegate
 
-- (void) fileName:(NSString *)fileName forResource:(NSString *)resourceName withError:(NSError *)error;
+- (void) fileName:(NSString *)fileName forResource:(NSString *)resourceName withError:(NSError *)error andCookie:(id)cookie;
 
 @end
 
 @interface ASResourceManager : NSObject
 
-- (void) retrieveResourceWithName:(NSString *)resourceName;
+- (void) retrieveResourceWithName:(NSString *)resourceName andCookie:(id)cookie;
 
 @property (nonatomic, weak) id<ASResourceManagerDelegate> delegate;
 
