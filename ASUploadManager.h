@@ -7,7 +7,19 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ASRequest.h"
+
+@protocol ASUploadManagerDelegate
+
+- (void) responseForRequest:(ASRequest *)request;
+
+@end
 
 @interface ASUploadManager : NSObject
+
+- (void) uploadResourceWithRequest:(ASRequest *)request;
+
+@property (nonatomic, strong) NSOperationQueue *queue;
+@property (nonatomic, weak) id<ASUploadManagerDelegate> delegate;
 
 @end
