@@ -17,7 +17,10 @@
 
 @interface ASResourceManager : ASObject
 
++ (ASResourceManager *) resourceManager;
+
 - (void) retrieveResourceWithName:(NSString *)resourceName andCookie:(id)cookie;
+- (void) retrieveResourceWithName:(NSString *)resourceName andURL:(NSString *)resourceURL andCompletionHandler:(void(^)(NSString *, NSString *, NSError *))handler;
 
 @property (nonatomic, weak) id<ASResourceManagerDelegate> delegate;
 

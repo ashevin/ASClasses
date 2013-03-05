@@ -19,6 +19,16 @@
 
 @implementation ASResourceManager
 
+static ASResourceManager *rm = nil;
+
++ (ASResourceManager *) resourceManager
+{
+  if ( rm == nil )
+    rm = [[ASResourceManager alloc] init];
+  
+  return rm;
+}
+
 - (void) instanceInit
 {
   self.downloader = [[ASDownloadManager alloc] init];
@@ -56,6 +66,32 @@
   [self.cache saveDataToCache:request.data withResourceName:request.resource];
   
   [self retrieveResourceWithName:request.resource andCookie:request.cookie];
+}
+
+- (void) retrieveResourceWithName:(NSString *)resourceName andURL:(NSString *)resourceURL andCompletionHandler:(void(^)(NSString *, NSString *, NSError *))handler
+{
+  NSString *file = [self.cache retrieveFilenameForResource:resourceName];
+  
+  if ( file != nil )
+  {
+    handler(file, resourceName, nil);
+    
+    return;
+  }
+  
+  ASRequest *req = [[ASRequest alloc] init];
+  req.resource = resourceURL;
+  
+  void(^resHandler)(ASRequest *);
+  
+  resHandler = ^(ASRequest *request)
+  {
+    [self.cache saveDataToCache:request.data withResourceName:resourceName];
+    
+    [self retrieveResourceWithName:resourceName andURL:resourceURL andCompletionHandler:handler];
+  };
+  
+  [self.downloader downloadResourceWithRequest:req andCompletionHandler:resHandler];
 }
 
 @end

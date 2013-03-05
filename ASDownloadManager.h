@@ -19,6 +19,7 @@
 @interface ASDownloadManager : ASObject
 
 - (void) downloadResourceWithRequest:(ASRequest *)request;
+- (void) downloadResourceWithRequest:(ASRequest *)request andCompletionHandler:(void(^)(ASRequest *))handler;
 
 @property (nonatomic, strong) NSOperationQueue *queue;
 @property (nonatomic, weak) id<ASDownloadManagerDelegate> delegate;

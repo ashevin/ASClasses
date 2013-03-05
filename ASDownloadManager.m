@@ -38,5 +38,27 @@
   [NSURLConnection sendAsynchronousRequest:req queue:self.queue completionHandler:handler];
 }
 
+- (void) downloadResourceWithRequest:(ASRequest *)request andCompletionHandler:(void(^)(ASRequest *))handler
+{
+  NSURLRequest *req =
+    [NSURLRequest requestWithURL:[NSURL URLWithString:request.resource]
+                  cachePolicy:NSURLRequestUseProtocolCachePolicy
+                  timeoutInterval:5.0];
+
+  void (^reqHandler)(NSURLResponse*, NSData*, NSError*);
+  
+  reqHandler = ^(NSURLResponse* response, NSData* data, NSError* error)
+  {
+    ASRequest *capturedRequest = request;
+    
+    capturedRequest.response = (NSHTTPURLResponse*)response;
+    capturedRequest.data = data;
+    capturedRequest.error = error;
+    
+    handler(capturedRequest);
+  };
+  
+  [NSURLConnection sendAsynchronousRequest:req queue:self.queue completionHandler:reqHandler];
+}
 
 @end
