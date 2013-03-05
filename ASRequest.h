@@ -11,6 +11,7 @@
 @interface ASRequest : NSObject
 
 @property (nonatomic, strong) NSHTTPURLResponse *response;
+@property (nonatomic, strong) NSDictionary *formData;
 @property (nonatomic, strong) NSData *data;
 @property (nonatomic, strong) NSError *error;
 @property (nonatomic, strong) NSString *resource;
