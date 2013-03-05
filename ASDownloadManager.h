@@ -20,7 +20,7 @@
 
 @protocol ASDownloadManagerDelegate
 
-- (void) responseWithRequest:(ASDownloadRequest *)request;
+- (void) responseForRequest:(ASDownloadRequest *)request;
 
 @end
 

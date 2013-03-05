@@ -42,7 +42,7 @@
     capturedRequest.data = data;
     capturedRequest.error = error;
     
-    [self.delegate responseWithRequest:capturedRequest];
+    [self.delegate responseForRequest:capturedRequest];
   };
   
   [NSURLConnection sendAsynchronousRequest:req queue:self.queue completionHandler:handler];

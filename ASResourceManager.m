@@ -52,7 +52,7 @@
   [self.downloader downloadResourceWithRequest:req];
 }
 
-- (void) responseWithRequest:(ASDownloadRequest *)request
+- (void) responseForRequest:(ASDownloadRequest *)request
 {
   NSLog(@"%@ [%@] : %d", request.response.MIMEType, request.response.suggestedFilename, request.response.statusCode);
   NSLog(@"error: %@", request.error);
