@@ -7,18 +7,13 @@
 //
 
 #import "ASUploadManager.h"
+#import "NSString+URLEncode.h"
 
 @implementation ASUploadManager
 
-- (id) init
+- (void) instanceInit
 {
-  self = [super init];
-  if ( self )
-  {
-    self.queue = [NSOperationQueue mainQueue];
-  }
-  
-  return self;
+  self.queue = [NSOperationQueue mainQueue];
 }
 
 - (void) uploadResourceWithRequest:(ASRequest *)request
@@ -28,11 +23,19 @@
                   cachePolicy:NSURLRequestUseProtocolCachePolicy
                   timeoutInterval:5.0];
 
+  NSMutableString *data = [[NSMutableString alloc] init];
+  
+  for (NSString *key in request.formData.allKeys )
+  {
+    NSString *k = [key urlEncode];
+    NSString *v = [request.formData[key] urlEncode];
+    
+    [data appendFormat:@"%@=%@&", k, v];
+  }
+  
   [req setHTTPMethod:@"POST"];
-  [req setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-  [req setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-  [req setValue:[NSString stringWithFormat:@"%d", [request.data length]] forHTTPHeaderField:@"Content-Length"];
-  [req setHTTPBody:request.data];
+  [req setValue:[NSString stringWithFormat:@"%d", [data length]] forHTTPHeaderField:@"Content-Length"];
+  [req setHTTPBody:[NSData dataWithBytes:[data UTF8String] length:data.length]];
 
   void (^handler)(NSURLResponse*, NSData*, NSError*);
   

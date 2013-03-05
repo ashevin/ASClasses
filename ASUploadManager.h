@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ASObject.h"
 #import "ASRequest.h"
 
 @protocol ASUploadManagerDelegate
@@ -15,7 +16,7 @@
 
 @end
 
-@interface ASUploadManager : NSObject
+@interface ASUploadManager : ASObject
 
 - (void) uploadResourceWithRequest:(ASRequest *)request;
 

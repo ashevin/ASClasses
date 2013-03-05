@@ -19,18 +19,12 @@
 
 @implementation ASResourceManager
 
-- (id) init
+- (void) instanceInit
 {
-  self = [super init];
-  if ( self )
-  {
-    self.downloader = [[ASDownloadManager alloc] init];
-    self.cache = [[ASCacheManager alloc] init];
-    
-    self.downloader.delegate = self;
-  }
+  self.downloader = [[ASDownloadManager alloc] init];
+  self.cache = [[ASCacheManager alloc] init];
   
-  return self;
+  self.downloader.delegate = self;
 }
 
 - (void) retrieveResourceWithName:(NSString *)resourceName andCookie:(id)cookie
@@ -44,7 +38,7 @@
     return;
   }
   
-  ASDownloadRequest *req = [[ASDownloadRequest alloc] init];
+  ASRequest *req = [[ASRequest alloc] init];
   
   req.resource = resourceName;
   req.cookie = cookie;
@@ -52,7 +46,7 @@
   [self.downloader downloadResourceWithRequest:req];
 }
 
-- (void) responseForRequest:(ASDownloadRequest *)request
+- (void) responseForRequest:(ASRequest *)request
 {
   NSLog(@"%@ [%@] : %d", request.response.MIMEType, request.response.suggestedFilename, request.response.statusCode);
   NSLog(@"error: %@", request.error);

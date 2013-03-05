@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ASObject.h"
 #import "ASRequest.h"
 
 @protocol ASDownloadManagerDelegate
@@ -15,7 +16,7 @@
 
 @end
 
-@interface ASDownloadManager : NSObject
+@interface ASDownloadManager : ASObject
 
 - (void) downloadResourceWithRequest:(ASRequest *)request;
 

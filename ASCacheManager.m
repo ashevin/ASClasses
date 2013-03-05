@@ -56,19 +56,13 @@
 
 @implementation ASCacheManager
 
-- (id) init
+- (void) instanceInit
 {
-  self = [super init];
-  if ( self )
-  {
-    self.resourceList = [NSMutableDictionary dictionaryWithContentsOfFile:self.cacheFile];
-    if ( self.resourceList == nil )
-      self.resourceList = [NSMutableDictionary dictionary];
-    
-    NSLog(@"cacheDir: %@", self.cacheDir);
-  }
-
-  return self;
+  self.resourceList = [NSMutableDictionary dictionaryWithContentsOfFile:self.cacheFile];
+  if ( self.resourceList == nil )
+    self.resourceList = [NSMutableDictionary dictionary];
+  
+  NSLog(@"cacheDir: %@", self.cacheDir);
 }
 
 - (NSString *) retrieveFilenameForResource:(NSString *)resourceName

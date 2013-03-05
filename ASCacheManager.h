@@ -7,8 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ASObject.h"
 
-@interface ASCacheManager : NSObject
+@interface ASCacheManager : ASObject
 
 - (NSString *) retrieveFilenameForResource:(NSString *)resourceName;
 

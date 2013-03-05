@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ASObject.h"
 
 @protocol ASResourceManagerDelegate
 
@@ -14,7 +15,7 @@
 
 @end
 
-@interface ASResourceManager : NSObject
+@interface ASResourceManager : ASObject
 
 - (void) retrieveResourceWithName:(NSString *)resourceName andCookie:(id)cookie;
 

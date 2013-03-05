@@ -10,15 +10,9 @@
 
 @implementation ASDownloadManager
 
-- (id) init
+- (void) instanceInit
 {
-  self = [super init];
-  if ( self )
-  {
-    self.queue = [NSOperationQueue mainQueue];
-  }
-  
-  return self;
+  self.queue = [NSOperationQueue mainQueue];
 }
 
 - (void) downloadResourceWithRequest:(ASRequest *)request
