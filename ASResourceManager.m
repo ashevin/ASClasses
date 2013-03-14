@@ -7,12 +7,12 @@
 //
 
 #import "ASResourceManager.h"
-#import "ASDownloadManager.h"
+#import "ASHTTPRequestManager.h"
 #import "ASCacheManager.h"
 
-@interface ASResourceManager() <ASDownloadManagerDelegate>
+@interface ASResourceManager()
 
-@property (nonatomic, strong) ASDownloadManager *downloader;
+@property (nonatomic, strong) ASHTTPRequestManager *httpRequestManager;
 @property (nonatomic, strong) ASCacheManager *cache;
 
 @end
@@ -31,41 +31,8 @@ static ASResourceManager *rm = nil;
 
 - (void) instanceInit
 {
-  self.downloader = [[ASDownloadManager alloc] init];
+  self.httpRequestManager = [ASHTTPRequestManager httpRequestManager];
   self.cache = [[ASCacheManager alloc] init];
-  
-  self.downloader.delegate = self;
-}
-
-- (void) retrieveResourceWithName:(NSString *)resourceName andCookie:(id)cookie
-{
-  NSString *file = [self.cache retrieveFilenameForResource:resourceName];
-  
-  if ( file != nil )
-  {
-    [self.delegate fileName:file forResource:resourceName withError:nil andCookie:cookie];
-    
-    return;
-  }
-  
-  ASRequest *req = [[ASRequest alloc] init];
-  
-  req.resource = resourceName;
-  req.cookie = cookie;
-  
-  [self.downloader downloadResourceWithRequest:req];
-}
-
-- (void) responseForRequest:(ASRequest *)request
-{
-  NSLog(@"%@ [%@] : %d", request.response.MIMEType, request.response.suggestedFilename, request.response.statusCode);
-  NSLog(@"error: %@", request.error);
-  NSLog(@"resource: %@", request.resource);
-  NSLog(@"cookie: %@", request.cookie);
-
-  [self.cache saveDataToCache:request.data withResourceName:request.resource];
-  
-  [self retrieveResourceWithName:request.resource andCookie:request.cookie];
 }
 
 - (void) retrieveResourceWithName:(NSString *)resourceName andURL:(NSString *)resourceURL andCompletionHandler:(void(^)(NSString *, NSString *, NSError *))handler
@@ -79,7 +46,7 @@ static ASResourceManager *rm = nil;
     return;
   }
   
-  ASRequest *req = [[ASRequest alloc] init];
+  ASRequest *req = [ASRequest new];
   req.resource = resourceURL;
   
   void(^resHandler)(ASRequest *);
@@ -91,7 +58,7 @@ static ASResourceManager *rm = nil;
     [self retrieveResourceWithName:resourceName andURL:resourceURL andCompletionHandler:handler];
   };
   
-  [self.downloader downloadResourceWithRequest:req andCompletionHandler:resHandler];
+  [self.httpRequestManager makeRequest:req withCompletionHandler:resHandler];
 }
 
 @end
