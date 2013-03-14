@@ -10,4 +10,9 @@
 
 @implementation ASRequest
 
++ (id) new
+{
+  return [[ASRequest alloc] init];
+}
+
 @end

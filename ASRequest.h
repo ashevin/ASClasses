@@ -10,6 +10,8 @@
 
 @interface ASRequest : NSObject
 
++ (id) new;
+
 @property (nonatomic, strong) NSHTTPURLResponse *response;
 @property (nonatomic, strong) NSDictionary *formData;
 @property (nonatomic, strong) NSData *data;
