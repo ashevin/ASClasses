@@ -34,3 +34,4 @@ ASPixel* ASPixelMake(unsigned char red, unsigned char green, unsigned char blue,
 @end
 
 ASPoint* ASPointMake(float x, float y);
+ASPoint* ASPointFromCGPoint(CGPoint cgPoint);

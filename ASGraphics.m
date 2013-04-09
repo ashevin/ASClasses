@@ -48,18 +48,20 @@ ASPoint* ASPointMake(float x, float y)
   return p;
 }
 
+ASPoint* ASPointFromCGPoint(CGPoint cgPoint)
+{
+  ASPoint *p = [[ASPoint alloc] init];
+  
+  p.x = floor(cgPoint.x);
+  p.y = floor(cgPoint.y);
+  
+  return p;
+}
+
 @implementation ASPoint
 
-@synthesize point = _point;
-
-- (id) init
-{
-  self = [super init];
-  if ( self )
-    _point = CGPointMake(0, 0);
-  
-  return self;
-}
+@synthesize x = _x;
+@synthesize y = _y;
 
 - (NSString *) description
 {
@@ -68,27 +70,17 @@ ASPoint* ASPointMake(float x, float y)
 
 - (void) setX:(float)x
 {
-  _point.x = floor(x);
+  _x = floor(x);
 }
 
 - (void) setY:(float)y
 {
-  _point.y = floor(y);
-}
-
-- (float) x
-{
-  return _point.x;
-}
-
-- (float) y
-{
-  return _point.y;
+  _y = floor(y);
 }
 
 - (CGPoint) point
 {
-  return CGPointMake(floor(_point.x), floor(_point.y));
+  return CGPointMake(_x, _y);
 }
 
 @end
