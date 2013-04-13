@@ -45,6 +45,11 @@
 {
   controller.contentController = self;
   controller.wantsFullScreenLayout = YES;
+  
+  ASBaseContentViewController *vc = self.stack.lastObject;
+  NSDictionary *state = [vc saveState];
+  if ( state )
+    [self saveState:state forController:vc];
 
   CGRect newFrame, oldFrame;
   [self framesForAnimation:animation newFrame:&newFrame oldFrame:&oldFrame];
@@ -72,6 +77,8 @@
     CGRect frames[2] = { newFrame, oldFrame };
     
     ASBaseContentViewController *vc = self.stack[self.stack.count - 2];
+    [vc restoreState:[self stateForController:vc]];
+    
     [self cycleFromViewController:self.stack.lastObject toViewController:vc withStartingFrame:frames];
   }
 
@@ -88,7 +95,7 @@
   return self.states[[@(controller.hash) description]];
 }
 
-- (void) displayController:(ASBaseContentViewController*) content;
+- (void) displayController:(ASBaseContentViewController *) content;
 {
   [self addChildViewController:content];
 
@@ -98,14 +105,14 @@
   [content didMoveToParentViewController:self];
 }
 
-- (void) hideContentController:(UIViewController*)content
+- (void) hideContentController:(UIViewController *)content
 {
   [content willMoveToParentViewController:nil];
   [content.view removeFromSuperview];
   [content removeFromParentViewController];
 }
 
-- (void) framesForAnimation:(ASStackControllerAnimation)animation newFrame:(CGRect*)newFrame oldFrame:(CGRect*)oldFrame
+- (void) framesForAnimation:(ASStackControllerAnimation)animation newFrame:(CGRect *)newFrame oldFrame:(CGRect *)oldFrame
 {
   *newFrame = self.view.frame;
   *oldFrame = self.view.frame;
@@ -133,7 +140,7 @@
   }
 }
 
-- (void) cycleFromViewController:(ASBaseContentViewController*)oldC toViewController:(ASBaseContentViewController*)newC withStartingFrame:(CGRect *)frames
+- (void) cycleFromViewController:(ASBaseContentViewController *)oldC toViewController:(ASBaseContentViewController *)newC withStartingFrame:(CGRect *)frames
 {
   [oldC willMoveToParentViewController:nil];
   [self addChildViewController:newC];

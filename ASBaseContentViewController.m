@@ -14,4 +14,13 @@
 
 @implementation ASBaseContentViewController
 
+- (NSDictionary *) saveState
+{
+  return nil;
+}
+
+- (void) restoreState:(NSDictionary *)state
+{
+}
+
 @end

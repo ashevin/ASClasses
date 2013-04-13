@@ -12,6 +12,9 @@
 
 @interface ASBaseContentViewController : UIViewController
 
+- (NSDictionary *) saveState;
+- (void) restoreState:(NSDictionary *)state;
+
 @property (nonatomic, weak) ASStackController *contentController;
 
 @end
