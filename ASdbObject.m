@@ -8,6 +8,12 @@
 
 #import "ASdbObject.h"
 
+@interface ASdbObject()
+
+@property (nonatomic) NSUInteger pid;
+
+@end
+
 @implementation ASdbObject
 
 @end

@@ -10,4 +10,12 @@
 
 @interface ASdb : NSObject
 
+- (id) initWithDB:(NSString *)dbName;
+
+- (void) beginClassRegistration;
+- (void) registerClass:(Class)class;
+- (void) endClassRegistration;
+
+- (void) insert:(id)obj;
+
 @end
