@@ -17,28 +17,46 @@
 
 @implementation ASStackController
 
+- (id) initWithCoder:(NSCoder *)aDecoder
+{
+  self = [super initWithCoder:aDecoder];
+  if ( self )
+  {
+    [self setup];
+  }
+  
+  return self;
+}
+
 - (id) initWithRootController:(ASBaseContentViewController *)controller;
 {
   self = [super init];
   if ( self )
   {
-    self.states = [@{} mutableCopy];
-    self.stack = [@[] mutableCopy];
+    [self setup];
     
     controller.contentController = self;
     controller.wantsFullScreenLayout = YES;
-
-    [self.stack addObject:controller];
+    
+    if ( controller )
+      [self.stack addObject:controller];
   }
   
   return self;
+}
+
+- (void) setup
+{
+  self.states = [@{} mutableCopy];
+  self.stack = [@[] mutableCopy];
 }
 
 - (void) viewDidAppear:(BOOL)animated
 {
   [super viewDidAppear:animated];
   
-  [self displayController:self.stack.lastObject];
+  if ( self.stack.count > 0 )
+    [self displayController:self.stack.lastObject];
 }
 
 - (void) pushController:(ASBaseContentViewController *)controller withAnimation:(ASStackControllerAnimation)animation
@@ -56,7 +74,11 @@
   
   CGRect frames[2] = { newFrame, oldFrame };
   
-  [self cycleFromViewController:self.stack.lastObject toViewController:controller withStartingFrame:frames];
+  if ( vc == nil )
+    [self displayController:controller];
+  else
+    [self cycleFromViewController:self.stack.lastObject toViewController:controller withStartingFrame:frames];
+  
   [self.stack addObject:controller];
 }
 
@@ -87,19 +109,19 @@
 
 - (void) saveState:(NSDictionary *)state forController:(ASBaseContentViewController *)controller
 {
-  self.states[[@(controller.hash) description]] = state;
+  self.states[[NSString stringWithFormat:@"%p", controller]] = state;
 }
 
 - (NSDictionary *) stateForController:(ASBaseContentViewController *)controller
 {
-  return self.states[[@(controller.hash) description]];
+  return self.states[[NSString stringWithFormat:@"%p", controller]];
 }
 
 - (void) displayController:(ASBaseContentViewController *) content;
 {
   [self addChildViewController:content];
 
-  content.view.frame = self.view.frame;
+  content.view.frame = self.view.bounds;
   [self.view addSubview:content.view];
 
   [content didMoveToParentViewController:self];
@@ -165,6 +187,5 @@
       }
   ];
 }
-
 
 @end
