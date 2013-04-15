@@ -7,6 +7,7 @@
 //
 
 #import "ASStackController.h"
+#import "ASBaseContentViewController.h"
 
 @interface ASStackController ()
 
@@ -105,6 +106,19 @@
   }
 
   [self.stack removeLastObject];
+}
+
+- (void) switchToController:(ASBaseContentViewController *)controller WithAnimation:(ASStackControllerAnimation)animation
+{
+  NSUInteger index = [self.stack indexOfObject:controller];
+
+  if ( index == self.stack.count - 1 )
+    return;
+  
+  if ( index != NSNotFound )
+    [self.stack removeObjectAtIndex:index];
+
+  [self pushController:controller withAnimation:animation];
 }
 
 - (void) saveState:(NSDictionary *)state forController:(ASBaseContentViewController *)controller
