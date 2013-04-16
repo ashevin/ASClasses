@@ -10,8 +10,12 @@
 
 @interface ASDrawerView : UIView
 
+- (id) initWithFrame:(CGRect)frame collapsed:(BOOL)collapsed;
+- (void) setCollapsedState:(BOOL)collapsed animated:(BOOL)animated;
+
 @property (nonatomic) CGSize pullTabSize;
 @property (nonatomic) UIColor *pullTabColor;
 @property (nonatomic, readonly) UIView *contentView;
+@property (nonatomic, readonly) BOOL isCollapsed;
 
 @end
