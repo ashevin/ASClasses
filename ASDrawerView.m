@@ -86,16 +86,16 @@
   CGRect originalFrame;
 }
 
-- (id)initWithFrame:(CGRect)frame collapsed:(BOOL)collapsed
+- (id)initWithFrame:(CGRect)frame closed:(BOOL)closed
 {
   self = [self initWithFrame:frame];
 
-  [self setCollapsedState:collapsed animated:NO];
+  [self setClosedState:closed animated:NO];
 
   return self;
 }
 
-- (id)initWithFrame:(CGRect)frame
+- (id) initWithFrame:(CGRect)frame
 {
   self = [super initWithFrame:frame];
   if ( self )
@@ -131,6 +131,32 @@
   [self addSubview:self.contentView];
 }
 
+- (void) layoutSubviews
+{
+  if ( self.isClosed )
+  {
+    CGRect frame = originalFrame;
+    frame.origin.y += CGRectGetHeight(self.contentView.frame);
+    frame.size.height = CGRectGetHeight(self.pullTabView.frame);
+    self.frame = frame;
+  }
+  else
+  {
+    CGRect contentFrame = self.frame;
+    contentFrame.origin.y = CGRectGetHeight(self.pullTabView.frame);
+    contentFrame.size.height = CGRectGetHeight(self.frame) - CGRectGetHeight(self.pullTabView.frame);
+    self.contentView.frame = contentFrame;
+  }
+}
+
+- (void) setFrame:(CGRect)frame
+{
+//  if ( ! self.isClosed )
+    [super setFrame:frame];
+  
+//  originalFrame = frame;
+}
+
 - (void) setupGestureRecognizers
 {
   self.flickUpRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(flick:)];
@@ -158,14 +184,29 @@
   return self.pullTabView.color;
 }
 
-- (void) setCollapsedState:(BOOL)collapsed animated:(BOOL)animated
+- (void) setClosedState:(BOOL)closed animated:(BOOL)animated
 {
-  if ( _isCollapsed == collapsed )
+  if ( _isClosed == closed )
     return;
   
-  _isCollapsed = collapsed;
+  _isClosed = closed;
   
-  if ( collapsed )
+  void (^animBlock)(void) = ^(void)
+  {
+    __weak __typeof(self) weakSelf = self;
+    
+    if ( ! closed )
+      weakSelf.frame = originalFrame;
+    
+    [weakSelf layoutSubviews];
+  };
+
+  [UIView animateWithDuration:( animated ) ? 0.25 : 0.0 delay:0.0
+    options:UIViewAnimationOptionAllowUserInteraction+UIViewAnimationCurveEaseIn animations:animBlock completion:^(BOOL finished){ [self setNeedsDisplay]; }];
+
+  return;
+  
+  if ( closed )
   {
     void (^animBlock)(void) = ^(void)
     {
@@ -192,13 +233,13 @@
 
 - (void) flick:(UIGestureRecognizer *)gestureRecognizer
 {
-  if ( gestureRecognizer == self.flickUpRecognizer && ! self.isCollapsed )
+  if ( gestureRecognizer == self.flickUpRecognizer && ! self.isClosed )
     return;
   
-  if ( gestureRecognizer == self.flickDownRecognizer && self.isCollapsed )
+  if ( gestureRecognizer == self.flickDownRecognizer && self.isClosed )
     return;
 
-  [self setCollapsedState:! self.isCollapsed animated:YES];
+  [self setClosedState:! self.isClosed animated:YES];
 }
 
 @end
