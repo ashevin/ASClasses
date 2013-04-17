@@ -7,8 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@class ASStackController;
+#import "ASStackController.h"
 
 @interface ASBaseContentViewController : UIViewController
 

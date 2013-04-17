@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ASBaseContentViewController.h"
+//#import "ASBaseContentViewController.h"
+
+@class ASBaseContentViewController;
 
 typedef enum
   {
@@ -24,6 +26,7 @@ typedef enum
 
 - (void) pushController:(ASBaseContentViewController *)controller withAnimation:(ASStackControllerAnimation)animation;
 - (void) popControllerWithAnimation:(ASStackControllerAnimation)animation;
+- (void) switchToController:(ASBaseContentViewController *)controller WithAnimation:(ASStackControllerAnimation)animation;
 
 - (void) saveState:(NSDictionary *)state forController:(ASBaseContentViewController *)controller;
 - (NSDictionary *) stateForController:(ASBaseContentViewController *)controller;
