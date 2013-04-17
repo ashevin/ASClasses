@@ -25,8 +25,6 @@
   {
     self.width = 20;
     self.backgroundColor = [UIColor clearColor];
-    
-    self.pullTabRect = CGRectMake((CGRectGetWidth(frame) / 2.0) - (self.width / 2.0), 0.0, self.width, CGRectGetHeight(frame));
   }
   
   return self;
@@ -39,6 +37,8 @@
   CGContextSetLineWidth(ctx, 1.0);
   CGContextSetStrokeColorWithColor(ctx, [UIColor blackColor].CGColor);
   CGContextSetFillColorWithColor(ctx, self.color.CGColor);
+    
+  self.pullTabRect = CGRectMake((CGRectGetWidth(self.frame) / 2.0) - (self.width / 2.0), 0.0, self.width, CGRectGetHeight(self.frame));
   
   float minx = CGRectGetMinX(self.pullTabRect);
   float miny = CGRectGetMinY(self.pullTabRect) + 1;
@@ -78,6 +78,8 @@
 
 @property (nonatomic, strong) UISwipeGestureRecognizer *flickUpRecognizer;
 @property (nonatomic, strong) UISwipeGestureRecognizer *flickDownRecognizer;
+
+@property (nonatomic) BOOL settingFrame;
 
 @end
 
@@ -138,7 +140,9 @@
     CGRect frame = originalFrame;
     frame.origin.y += CGRectGetHeight(self.contentView.frame);
     frame.size.height = CGRectGetHeight(self.pullTabView.frame);
+    self.settingFrame = YES;
     self.frame = frame;
+    self.settingFrame = NO;
   }
   else
   {
@@ -147,14 +151,6 @@
     contentFrame.size.height = CGRectGetHeight(self.frame) - CGRectGetHeight(self.pullTabView.frame);
     self.contentView.frame = contentFrame;
   }
-}
-
-- (void) setFrame:(CGRect)frame
-{
-//  if ( ! self.isClosed )
-    [super setFrame:frame];
-  
-//  originalFrame = frame;
 }
 
 - (void) setupGestureRecognizers
@@ -172,6 +168,33 @@
 - (BOOL) pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
   return CGRectContainsPoint(self.pullTabView.pullTabRect, point) || CGRectContainsPoint(self.contentView.frame, point);
+}
+
+#pragma mark - Properties
+
+- (void) setFrame:(CGRect)frame
+{
+  if ( self.settingFrame )
+  {
+    [super setFrame:frame];
+    return;
+  }
+  
+  if ( ! self.isClosed )
+    [super setFrame:frame];
+
+  originalFrame = frame;
+}
+
+- (void) setPullTabSize:(CGSize)pullTabSize
+{
+  self.pullTabView.width = pullTabSize.width;
+  
+  CGRect frame = self.pullTabView.frame;
+  frame.size.height = pullTabSize.height;
+  self.pullTabView.frame = frame;
+  
+  [self setNeedsLayout];
 }
 
 - (void) setPullTabColor:(UIColor *)pullTabColor
@@ -196,40 +219,20 @@
     __weak __typeof(self) weakSelf = self;
     
     if ( ! closed )
+    {
+      self.settingFrame = YES;
       weakSelf.frame = originalFrame;
+      self.settingFrame = NO;
+    }
     
     [weakSelf layoutSubviews];
   };
 
   [UIView animateWithDuration:( animated ) ? 0.25 : 0.0 delay:0.0
     options:UIViewAnimationOptionAllowUserInteraction+UIViewAnimationCurveEaseIn animations:animBlock completion:^(BOOL finished){ [self setNeedsDisplay]; }];
-
-  return;
-  
-  if ( closed )
-  {
-    void (^animBlock)(void) = ^(void)
-    {
-      CGRect frame = self.frame;
-      frame.origin.y += CGRectGetHeight(self.contentView.frame);
-      frame.size.height = CGRectGetHeight(self.pullTabView.frame);
-      self.frame = frame;
-    };
-
-    [UIView animateWithDuration:( animated ) ? 0.25 : 0.0 delay:0.0
-      options:UIViewAnimationOptionAllowUserInteraction+UIViewAnimationCurveEaseIn animations:animBlock completion:^(BOOL finished){ [self setNeedsDisplay]; }];
-  }
-  else
-  {
-    void (^animBlock)(void) = ^(void)
-    {
-      self.frame = originalFrame;
-    };
-
-    [UIView animateWithDuration:( animated ) ? 0.25 : 0.0 delay:0.0
-      options:UIViewAnimationOptionAllowUserInteraction+UIViewAnimationCurveEaseIn animations:animBlock completion:^(BOOL finished){ [self setNeedsDisplay]; }];
-  }
 }
+
+#pragma mark - Handlers
 
 - (void) flick:(UIGestureRecognizer *)gestureRecognizer
 {
