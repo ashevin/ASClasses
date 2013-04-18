@@ -138,7 +138,7 @@
   if ( self.isClosed )
   {
     CGRect frame = originalFrame;
-    frame.origin.y += CGRectGetHeight(self.contentView.frame);
+    frame.origin.y = CGRectGetMaxY(originalFrame) - CGRectGetHeight(self.pullTabView.frame);
     frame.size.height = CGRectGetHeight(self.pullTabView.frame);
     self.settingFrame = YES;
     self.frame = frame;
@@ -193,6 +193,10 @@
   CGRect frame = self.pullTabView.frame;
   frame.size.height = pullTabSize.height;
   self.pullTabView.frame = frame;
+  
+  frame = self.contentView.frame;
+  frame.origin.y = CGRectGetHeight(self.pullTabView.frame);
+  self.contentView.frame = frame;
   
   [self setNeedsLayout];
 }
