@@ -63,7 +63,6 @@
 - (void) pushController:(ASBaseContentViewController *)controller withAnimation:(ASStackControllerAnimation)animation
 {
   controller.contentController = self;
-  controller.wantsFullScreenLayout = YES;
   
   ASBaseContentViewController *vc = self.stack.lastObject;
   NSDictionary *state = [vc saveState];
@@ -150,8 +149,8 @@
 
 - (void) framesForAnimation:(ASStackControllerAnimation)animation newFrame:(CGRect *)newFrame oldFrame:(CGRect *)oldFrame
 {
-  *newFrame = self.view.frame;
-  *oldFrame = self.view.frame;
+  *newFrame = self.view.bounds;
+  *oldFrame = self.view.bounds;
   
   switch ( animation )
   {
@@ -200,6 +199,13 @@
         [newC didMoveToParentViewController:self];
       }
   ];
+}
+
+#pragma mark - Properties
+
+- (ASBaseContentViewController *) currentController
+{
+  return self.stack.lastObject;
 }
 
 @end

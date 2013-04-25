@@ -31,4 +31,6 @@ typedef enum
 - (void) saveState:(NSDictionary *)state forController:(ASBaseContentViewController *)controller;
 - (NSDictionary *) stateForController:(ASBaseContentViewController *)controller;
 
+@property (nonatomic, readonly) ASBaseContentViewController *currentController;
+
 @end
