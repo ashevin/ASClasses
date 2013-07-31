@@ -11,6 +11,10 @@
 
 @implementation ASLineSegmentRecognizer
 {
+  NSArray *newRules;
+  NSArray *_rules;
+  BOOL middleOfGesture;
+  
   CGPoint startingPoint;
   
   NSMutableArray *directions;
@@ -57,6 +61,8 @@
   
   directions = [[NSMutableArray alloc] init];
   currentDirection = ASSegmentDirectionUnknown;
+  
+  middleOfGesture = YES;
 }
 
 - (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -146,10 +152,8 @@
     currentDirection = direction;
     [directions addObject:@(currentDirection)];
     
-    NSLog(@"direction: %@", EnumToTextMap[@(currentDirection)]);
-    
-    if ( [self.lineSegmentDelegate respondsToSelector:@selector(lineSegmentRecognizer:didStartDirection:)] )
-      [self.lineSegmentDelegate lineSegmentRecognizer:self didStartDirection:direction];
+    if ( [self.lineSegmentDelegate respondsToSelector:@selector(lineSegmentRecognizer:didMoveDirection:)] )
+      [self.lineSegmentDelegate lineSegmentRecognizer:self didMoveDirection:direction];
     
     self.state = [self processDirectionsGestureComplete:NO];
   }
@@ -175,10 +179,17 @@
   
   currentProcessDirection = currentProcessSegment = 0;
   sawEnd = NO;
+  
+  middleOfGesture = NO;
+  if ( _rules != newRules )
+    _rules = newRules;
 }
 
 - (UIGestureRecognizerState)processDirectionsGestureComplete:(BOOL)complete
 {
+  if ( _rules.count == 0 )
+    return ( complete ) ? UIGestureRecognizerStateFailed : UIGestureRecognizerStatePossible;
+  
   NSString *currDir = EnumToTextMap[directions.lastObject];
   NSString *prevDir;
   if ( directions.count > currentProcessDirection + 1 )
@@ -190,8 +201,8 @@
   {
     if ( sawEnd )
     {
-      if ( ( ! [self.rules[currentProcessSegment][@"end"] containsObject:currDir] ) ||
-           ( self.rules[currentProcessSegment][prevDir] == nil ) )
+      if ( ( ! [_rules[currentProcessSegment][@"end"] containsObject:currDir] ) ||
+           ( _rules[currentProcessSegment][prevDir] == nil ) )
       {
         sawEnd = NO;
         prevDir = nil;
@@ -202,22 +213,22 @@
     }
     
     // We've run out of rules, but the gesture isn't complete.
-    if ( currentProcessSegment == self.rules.count )
+    if ( currentProcessSegment == _rules.count )
       return UIGestureRecognizerStateFailed;
     
     if ( prevDir == nil )
-      state = ( [self.rules[currentProcessSegment][@"start"] containsObject:currDir] ) ? UIGestureRecognizerStatePossible : UIGestureRecognizerStateFailed ;
+      state = ( [_rules[currentProcessSegment][@"start"] containsObject:currDir] ) ? UIGestureRecognizerStatePossible : UIGestureRecognizerStateFailed ;
     else
-      state = ( [self.rules[currentProcessSegment][prevDir] containsObject:currDir] ) ? UIGestureRecognizerStatePossible : UIGestureRecognizerStateFailed ;
+      state = ( [_rules[currentProcessSegment][prevDir] containsObject:currDir] ) ? UIGestureRecognizerStatePossible : UIGestureRecognizerStateFailed ;
     
-    if ( [self.rules[currentProcessSegment][@"end"] containsObject:currDir] )
+    if ( [_rules[currentProcessSegment][@"end"] containsObject:currDir] )
       sawEnd = YES;
     
     return state;
   }
   else
   {
-    return ( ( currentProcessSegment == self.rules.count || sawEnd ) && ( self.state == UIGestureRecognizerStatePossible ) )
+    return ( ( currentProcessSegment == _rules.count - 1 && sawEnd ) && ( self.state == UIGestureRecognizerStatePossible ) )
       ? UIGestureRecognizerStateEnded
       : UIGestureRecognizerStateFailed;
   }
@@ -228,6 +239,19 @@
 - (NSString *) nameForDirection:(ASSegmentDirection)direction
 {
   return EnumToTextMap[@(direction)];
+}
+
+- (void)setRules:(NSArray *)rules
+{
+  newRules = [rules copy];
+  
+  if ( ! middleOfGesture )
+    _rules = newRules;
+}
+
+- (NSArray *)rules
+{
+  return newRules;
 }
 
 @end

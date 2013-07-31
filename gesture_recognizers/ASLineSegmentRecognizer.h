@@ -27,7 +27,7 @@ ASSegmentDirection;
 
 @protocol ASLineSegmentDelegate <NSObject>
 
-- (void)lineSegmentRecognizer:(ASLineSegmentRecognizer *)recognizer didStartDirection:(ASSegmentDirection)direction;
+- (void)lineSegmentRecognizer:(ASLineSegmentRecognizer *)recognizer didMoveDirection:(ASSegmentDirection)direction;
 
 @end
 
