@@ -9,6 +9,34 @@
 #import "ASLineSegmentRecognizer.h"
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
+@interface ASLineSegment ()
+
+- (void) setDistanceTravelled:(CGFloat)distanceTravelled;
+
+@end
+
+@implementation ASLineSegment
+
+- (id) initWithDirection:(ASSegmentDirection)direction andDistanceTravelled:(CGFloat)distanceTravelled
+{
+  self = [super init];
+  if ( self )
+  {
+    _direction = direction;
+    _distanceTravelled = distanceTravelled;
+  }
+  
+  return self;
+}
+
+- (void)setDistanceTravelled:(CGFloat)distanceTravelled
+{
+  _distanceTravelled = distanceTravelled;
+}
+
+@end
+
+
 @implementation ASLineSegmentRecognizer
 {
   NSArray *newRules;
@@ -26,6 +54,8 @@
   NSInteger currentProcessDirection;
   
   BOOL sawEnd;
+  
+  NSMutableArray *segments;
 }
 
 - (id) initWithTarget:(id)target action:(SEL)action
@@ -63,6 +93,8 @@
   currentDirection = ASSegmentDirectionUnknown;
   
   middleOfGesture = YES;
+  
+  segments = [[NSMutableArray alloc] init];
 }
 
 - (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -152,11 +184,15 @@
     currentDirection = direction;
     [directions addObject:@(currentDirection)];
     
-    if ( [self.lineSegmentDelegate respondsToSelector:@selector(lineSegmentRecognizer:didMoveDirection:)] )
-      [self.lineSegmentDelegate lineSegmentRecognizer:self didMoveDirection:direction];
+    [segments addObject:[[ASLineSegment alloc] initWithDirection:direction andDistanceTravelled:distance]];
+    
+    if ( [self.lineSegmentDelegate respondsToSelector:@selector(lineSegmentRecognizer:didAddSegment:)] )
+      [self.lineSegmentDelegate lineSegmentRecognizer:self didAddSegment:segments.lastObject];
     
     self.state = [self processDirectionsGestureComplete:NO];
   }
+  else
+    [segments.lastObject setDistanceTravelled:[segments.lastObject distanceTravelled] + distance];
 }
 
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
@@ -183,6 +219,8 @@
   middleOfGesture = NO;
   if ( _rules != newRules )
     _rules = newRules;
+  
+  segments = nil;
 }
 
 - (UIGestureRecognizerState)processDirectionsGestureComplete:(BOOL)complete

@@ -22,12 +22,21 @@ typedef enum
 }
 ASSegmentDirection;
 
+@interface ASLineSegment : NSObject
+
+- (id) initWithDirection:(ASSegmentDirection)direction andDistanceTravelled:(CGFloat)distanceTravelled;
+
+@property (nonatomic, readonly) ASSegmentDirection direction;
+@property (nonatomic, readonly) CGFloat distanceTravelled;
+
+@end
+
 
 @class ASLineSegmentRecognizer;
 
 @protocol ASLineSegmentDelegate <NSObject>
 
-- (void)lineSegmentRecognizer:(ASLineSegmentRecognizer *)recognizer didMoveDirection:(ASSegmentDirection)direction;
+- (void)lineSegmentRecognizer:(ASLineSegmentRecognizer *)recognizer didAddSegment:(ASLineSegment *)segment;
 
 @end
 
