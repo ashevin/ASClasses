@@ -45,7 +45,6 @@
   
   CGPoint startingPoint;
   
-  NSMutableArray *directions;
   ASSegmentDirection currentDirection;
   
   NSDictionary *EnumToTextMap;
@@ -89,12 +88,10 @@
   
   NSLog(@"startingPoint: %@", NSStringFromCGPoint(startingPoint));
   
-  directions = [[NSMutableArray alloc] init];
+  segments = [[NSMutableArray alloc] init];
   currentDirection = ASSegmentDirectionUnknown;
   
   middleOfGesture = YES;
-  
-  segments = [[NSMutableArray alloc] init];
 }
 
 - (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -182,8 +179,6 @@
   if ( currentDirection != direction )
   {
     currentDirection = direction;
-    [directions addObject:@(currentDirection)];
-    
     [segments addObject:[[ASLineSegment alloc] initWithDirection:direction andDistanceTravelled:distance]];
     
     if ( [self.lineSegmentDelegate respondsToSelector:@selector(lineSegmentRecognizer:didAddSegment:)] )
@@ -192,7 +187,12 @@
     self.state = [self processDirectionsGestureComplete:NO];
   }
   else
+  {
     [segments.lastObject setDistanceTravelled:[segments.lastObject distanceTravelled] + distance];
+
+    if ( [self.lineSegmentDelegate respondsToSelector:@selector(lineSegmentRecognizer:didAddSegment:)] )
+      [self.lineSegmentDelegate lineSegmentRecognizer:self didAddSegment:segments.lastObject];
+  }
 }
 
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
@@ -211,7 +211,6 @@
 {
   startingPoint = CGPointZero;
   currentDirection = ASSegmentDirectionUnknown;
-  directions = nil;
   
   currentProcessDirection = currentProcessSegment = 0;
   sawEnd = NO;
@@ -228,10 +227,10 @@
   if ( _rules.count == 0 )
     return ( complete ) ? UIGestureRecognizerStateFailed : UIGestureRecognizerStatePossible;
   
-  NSString *currDir = EnumToTextMap[directions.lastObject];
+  NSString *currDir = EnumToTextMap[@([segments.lastObject direction])];
   NSString *prevDir;
-  if ( directions.count > currentProcessDirection + 1 )
-    prevDir = EnumToTextMap[directions[directions.count - 2]];
+  if ( segments.count > currentProcessDirection + 1 )
+    prevDir = EnumToTextMap[@([segments[segments.count - 2] direction])];
 
   UIGestureRecognizerState state = self.state;
   
@@ -246,7 +245,7 @@
         prevDir = nil;
         
         currentProcessSegment++;
-        currentProcessDirection = directions.count - 1;
+        currentProcessDirection = segments.count - 1;
       }
     }
     
